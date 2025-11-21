@@ -2,6 +2,7 @@ package com.mysite.sbb;
 
 import com.mysite.sbb.domain.question.Question;
 import com.mysite.sbb.domain.question.QuestionRepository;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,9 +10,11 @@ import org.springframework.test.context.ActiveProfiles;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import java.util.Optional;
 
 @ActiveProfiles("test")
 @SpringBootTest
+@Transactional
 class SbbApplicationTests {
 
 	@Autowired
@@ -59,6 +62,16 @@ class SbbApplicationTests {
         Question q = qList.get(0);
         assertThat(q).isNotNull();
         assertThat(q.getId()).isEqualTo(1);
+    }
+
+    @Test
+    void t6() {
+        assertThat(this.questionRepository.count()).isEqualTo(2);
+        Optional<Question> oq = this.questionRepository.findById(1);
+        assertThat(oq.isPresent()).isTrue();
+        Question q = oq.get();
+        this.questionRepository.delete(q);
+        assertThat(this.questionRepository.count()).isEqualTo(1);
     }
 
 }
